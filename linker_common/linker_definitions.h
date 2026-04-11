@@ -40,6 +40,8 @@ extern uint32_t __FLASH_INFO_SHOULD_ROLLBACK;
 extern uint32_t __FLASH_APP_START;
 extern uint32_t __FLASH_DOWNLOAD_SLOT_START;
 extern uint32_t __FLASH_SWAP_SPACE_LENGTH;
+extern uint32_t __FLASH_SIZE;
+extern uint32_t __FILESYSTEM_SIZE;
 
 #ifdef __cplusplus
 }

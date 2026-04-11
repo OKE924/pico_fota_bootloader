@@ -51,10 +51,13 @@ if ( NOT PFB_RESERVED_FILESYSTEM_SIZE_KB )
     set(PFB_RESERVED_FILESYSTEM_SIZE_KB 0 CACHE STRING "EXPERIMENTAL: Size in KB reserved for the filesystem")
 endif()
 
+message("Filesystem size: ${PFB_RESERVED_FILESYSTEM_SIZE_KB}")
+
 ########################################
 # Build linker definitions
 ########################################
 # PICO_FLASH_SIZE_BYTES
+
 execute_process(
     COMMAND cat ${CMAKE_CURRENT_LIST_DIR}/linker_common/linker_definitions.in
     COMMAND ${CMAKE_C_COMPILER} -DFLASH_SIZE=${PICO_FLASH_SIZE_BYTES}
@@ -90,7 +93,9 @@ add_library(pico_fota_bootloader_lib STATIC
             src/pico_fota_bootloader.c)
 target_sources(pico_fota_bootloader_lib PRIVATE src/flash_utils.c)
 target_include_directories(pico_fota_bootloader_lib PUBLIC
-                           ${CMAKE_CURRENT_SOURCE_DIR}/include)
+                           ${CMAKE_CURRENT_SOURCE_DIR}/include
+                           ${CMAKE_CURRENT_SOURCE_DIR}/linker_common
+                           ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_include_directories(pico_fota_bootloader_lib PRIVATE
                            linker_common)
 target_link_libraries(pico_fota_bootloader_lib PUBLIC
@@ -187,8 +192,20 @@ target_compile_options(pico_fota_bootloader PRIVATE
                        -Wnull-dereference)
 
 pico_set_linker_script(pico_fota_bootloader ${CMAKE_CURRENT_SOURCE_DIR}/linker_common/boot${CPU}.ld)
+message("build Bootloader for USB-flash")
 pico_add_extra_outputs(pico_fota_bootloader)
 
+
+add_custom_command(
+    TARGET pico_fota_bootloader
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory
+            ${CMAKE_SOURCE_DIR}/deploy/pico_fota_bootloader
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            $<TARGET_FILE_DIR:pico_fota_bootloader>
+            ${CMAKE_SOURCE_DIR}/deploy/pico_fota_bootloader
+    COMMENT "Sync full build output"
+)
 ########################################
 # Manage bootloader's logs
 ########################################
@@ -196,9 +213,9 @@ if (PFB_WITH_BOOTLOADER_LOGS)
     target_compile_definitions(pico_fota_bootloader PRIVATE PFB_WITH_BOOTLOADER_LOGS)
     if (PFB_REDIRECT_BOOTLOADER_LOGS_TO_UART)
         pico_enable_stdio_usb(pico_fota_bootloader 0)
-        pico_enable_stdio_uart(pico_fota_bootloader 1)
+        pico_enable_stdio_uart(pico_fota_bootloader 0)
     else ()
-        pico_enable_stdio_usb(pico_fota_bootloader 1)
+        pico_enable_stdio_usb(pico_fota_bootloader 0)
         pico_enable_stdio_uart(pico_fota_bootloader 0)
     endif ()
 endif ()

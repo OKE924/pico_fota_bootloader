@@ -125,6 +125,8 @@ bool pfb_is_after_rollback(void);
  */
 int pfb_firmware_sha256_check(size_t firmware_size);
 
+uint8_t ReadFlashDownloadSlot(size_t offset);
+
 #ifdef __cplusplus
 }
 #endif

@@ -165,6 +165,7 @@ bool pfb_is_after_rollback(void) {
 int pfb_firmware_sha256_check(size_t firmware_size) {
 #ifdef PFB_WITH_SHA256_HASHING
     if (firmware_size % PFB_ALIGN_SIZE || firmware_size < PFB_ALIGN_SIZE) {
+        printf("firmware size wrong\n");
         return 1;
     }
 
@@ -195,12 +196,20 @@ int pfb_firmware_sha256_check(size_t firmware_size) {
     mbedtls_sha256_free(&sha256_ctx);
 
     void *image_sha256_address = get_image_sha256_address(firmware_size);
-    if (memcmp(calculated_sha256, image_sha256_address, PFB_SHA256_DIGEST_SIZE)
-        != 0) {
+    if (memcmp(calculated_sha256, image_sha256_address, PFB_SHA256_DIGEST_SIZE) != 0) 
+    {
+        printf("SHA check wrong\n");
         return 1;
     }
 #endif // PFB_WITH_SHA256_HASHING
     (void) firmware_size;
 
     return 0;
+}
+
+
+uint8_t ReadFlashDownloadSlot(size_t offset)
+{
+    uint8_t *ptr = (uint8_t*)PFB_ADDR_AS_U32(__FLASH_DOWNLOAD_SLOT_START);
+    return   ptr[offset];
 }
