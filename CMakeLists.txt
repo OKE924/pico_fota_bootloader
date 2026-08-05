@@ -57,7 +57,7 @@ message("Filesystem size: ${PFB_RESERVED_FILESYSTEM_SIZE_KB}")
 # Build linker definitions
 ########################################
 # PICO_FLASH_SIZE_BYTES
-
+message("MCU flash size is : ${PICO_FLASH_SIZE_BYTES} bytes")
 execute_process(
     COMMAND cat ${CMAKE_CURRENT_LIST_DIR}/linker_common/linker_definitions.in
     COMMAND ${CMAKE_C_COMPILER} -DFLASH_SIZE=${PICO_FLASH_SIZE_BYTES}
@@ -98,12 +98,14 @@ target_include_directories(pico_fota_bootloader_lib PUBLIC
                            ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_include_directories(pico_fota_bootloader_lib PRIVATE
                            linker_common)
+                           
 target_link_libraries(pico_fota_bootloader_lib PUBLIC
                       hardware_watchdog
                       pico_stdlib
                       hardware_flash)
 target_link_libraries(pico_fota_bootloader_lib PRIVATE
                       pico_mbedtls)
+
 target_link_options(pico_fota_bootloader_lib PRIVATE
                     "-T${CMAKE_CURRENT_BINARY_DIR}/linker_definitions.ld")
 target_compile_options(pico_fota_bootloader_lib PRIVATE
