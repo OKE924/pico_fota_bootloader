@@ -206,10 +206,3 @@ int pfb_firmware_sha256_check(size_t firmware_size) {
 
     return 0;
 }
-
-
-uint8_t ReadFlashDownloadSlot(size_t offset)
-{
-    uint8_t *ptr = (uint8_t*)PFB_ADDR_AS_U32(__FLASH_DOWNLOAD_SLOT_START);
-    return   ptr[offset];
-}
