@@ -163,8 +163,7 @@ static void print_welcome_message(void) {
 }
 
 int main(void) {
-    //stdio_init_all();
-    stdio_uart_init_full(uart1, 115200, 4, -1); 
+    stdio_init_all();
     sleep_ms(2000);
 
     print_welcome_message();
